@@ -1,0 +1,7 @@
+[project]
+name = "nlp"
+version = "0.1.0"
+description = "PoC: predict Stack Overflow tags from post titles (TF-IDF + logistic regression vs fine-tuned DistilBERT)"
+readme = "README.md"
+requires-python = ">=3.12,<3.13"
+dependencies = []
