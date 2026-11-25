@@ -5,7 +5,8 @@ Proof of concept: given only the **title** of a Stack Overflow post, predict its
 | | Approach |
 |---|---|
 | **ML model** | TF-IDF (word + character n-grams) → One-vs-Rest logistic regression (scikit-learn) |
-| **DL model** | Fine-tuned `distilbert-base-uncased` with a multi-label sigmoid head (Hugging Face `transformers`, PyTorch) |
+| **DL model** | v1: fine-tuned `distilbert-base-uncased`. **v2**: fine-tuned `roberta-base` with weighted loss, separate head learning rate and per-tag thresholds (Hugging Face `transformers`, PyTorch) |
+| **Ensemble** | Weighted average of ML and DL v2 tag scores |
 
 Domain vocabulary (post, title, tag, kept tag, label set, …) is defined in [`GLOSSARY.md`](GLOSSARY.md).
 
@@ -25,7 +26,7 @@ The ML part also runs on any laptop CPU in about 30 seconds; the DL part needs a
 2. **Kept tags**: only tags present on ≥ 20 posts are predicted (86 tags); posts left without any kept tag are dropped (4,100 posts remain).
 3. **Split**: by post, 80 / 10 / 10 train / validation / test, fixed seed, identical for both models.
 4. **Decision rule**: each model scores every kept tag in [0, 1]; predicted tags are those above a threshold tuned on validation (max micro-F1), with at least the top tag.
-5. **Metrics on test**: micro-F1 (headline), macro-F1, precision@1, recall@3, training time.
+5. **Metrics on test**: micro-F1 (headline), macro-F1, precision@1, recall@3, average predicted tags per post, training time.
 
 ## Results
 
@@ -34,13 +35,16 @@ Test set (410 posts), Colab run with a T4 GPU:
 | Model | micro-F1 | macro-F1 | P@1 | R@3 | Training time |
 |---|---|---|---|---|---|
 | ML model (TF-IDF + LogReg) | 0.532 | **0.427** | 0.627 | **0.665** | 37 s (CPU) |
-| DL model (DistilBERT) | **0.538** | 0.377 | **0.656** | 0.654 | 342 s (GPU) |
+| DL v1 (DistilBERT) | **0.538** | 0.377 | **0.656** | 0.654 | 342 s (GPU) |
+| DL v2 (RoBERTa) | *to run* | | | | |
+| Ensemble ML + DL v2 | *to run* | | | | |
 
-**Conclusion.** The two models tie on frequent tags: the micro-F1 and P@1 gaps are within the noise of a 410-post test set.
+**v1 conclusion.** The two models tie on frequent tags: the micro-F1 and P@1 gaps are within the noise of a 410-post test set.
 The ML model is better on rare tags (macro-F1) and readily predicts several tags. DistilBERT rarely goes beyond one tag:
 it was still improving at its last epoch, and its uncased tokenizer mangles `C#`/`C++`. At this data size, the ML model is
 the better PoC choice: it is 9× cheaper to train, needs no GPU, and is explainable. The full analysis and DL
-improvement ideas (longer training, per-tag thresholds, code-aware model, ML+DL ensemble) are in section 9 of the notebook.
+improvement ideas (longer training, per-tag thresholds, code-aware model, ML+DL ensemble) are at the end of the notebook.
+DL v2 implements those ideas; its rationale is in section 6 of the notebook.
 
 ## Data
 
