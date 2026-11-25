@@ -29,12 +29,18 @@ The ML part also runs on any laptop CPU in about 30 seconds; the DL part needs a
 
 ## Results
 
-| Model | micro-F1 | macro-F1 | P@1 | R@3 |
-|---|---|---|---|---|
-| ML model (TF-IDF + LogReg) | 0.532 | 0.427 | 0.627 | 0.665 |
-| DL model (DistilBERT) | *run on Colab* | | | |
+Test set (410 posts), Colab run with a T4 GPU:
 
-ML figures come from a local CPU run. Fill in the DL row (and the conclusion in the notebook) after the Colab run.
+| Model | micro-F1 | macro-F1 | P@1 | R@3 | Training time |
+|---|---|---|---|---|---|
+| ML model (TF-IDF + LogReg) | 0.532 | **0.427** | 0.627 | **0.665** | 37 s (CPU) |
+| DL model (DistilBERT) | **0.538** | 0.377 | **0.656** | 0.654 | 342 s (GPU) |
+
+**Conclusion.** The two models tie on frequent tags: the micro-F1 and P@1 gaps are within the noise of a 410-post test set.
+The ML model is better on rare tags (macro-F1) and readily predicts several tags. DistilBERT rarely goes beyond one tag:
+it was still improving at its last epoch, and its uncased tokenizer mangles `C#`/`C++`. At this data size, the ML model is
+the better PoC choice: it is 9× cheaper to train, needs no GPU, and is explainable. The full analysis and DL
+improvement ideas (longer training, per-tag thresholds, code-aware model, ML+DL ensemble) are in section 9 of the notebook.
 
 ## Data
 
