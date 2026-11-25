@@ -11,7 +11,7 @@ Domain vocabulary (post, title, tag, kept tag, label set, …) is defined in [`G
 
 ## Run it
 
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/Luka-Rondal/nlp/blob/main/notebooks/stackoverflow_tag_prediction.ipynb)
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/lrondal/poc-nlp/blob/main/notebooks/stackoverflow_tag_prediction.ipynb)
 
 1. Open [`notebooks/stackoverflow_tag_prediction.ipynb`](notebooks/stackoverflow_tag_prediction.ipynb) in Google Colab (badge above).
 2. *Runtime → Change runtime type → T4 GPU*.
